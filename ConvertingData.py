@@ -60,3 +60,5 @@ Glovedata = load_mat('DB1processedGlove.mat')
 
 with open('DB1processedGlove.pkl', 'wb') as f:
     pickle.dump(Glovedata, f)
+
+data = Glovedata['']
