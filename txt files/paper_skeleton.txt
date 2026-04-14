@@ -1,0 +1,92 @@
+```
+================================================================================
+EMG-Based Gesture Classification for Bionic Hand Prosthetics
+A Machine Learning Pipeline Based on the NinaPro DB1 Dataset
+================================================================================
+
+OVERVIEW
+--------
+This project developed a machine learning pipeline to classify hand and finger
+movements from surface electromyography (sEMG) signals recorded from the
+forearm. The ultimate application is the natural, intuitive control of bionic
+hand prosthetics — enabling upper-limb amputees to control a robotic hand
+using the same muscle signals that an intact person would use to control their
+own hand.
+
+DATASET
+-------
+The pipeline was built on the NinaPro (Non-Invasive Adaptive Prosthetics)
+Database 1 (DB1), a benchmark scientific database designed specifically to
+advance research in robotic hand prosthetics [1]. DB1 contains sEMG recordings
+from 27 intact subjects performing 52 distinct hand movements across three
+exercises:
+  - Exercise A: 12 finger movements
+  - Exercise B: 17 wrist and hand configurations
+  - Exercise C: 23 grasping and functional movements
+Each movement was repeated 10 times per subject, recorded across 10 Otto Bock
+sEMG electrodes placed on the forearm [1].
+
+METHODOLOGY
+-----------
+The pipeline followed the classification procedure described in
+Atzori et al. (2014) [1]:
+
+  Preprocessing:
+    Raw EMG segments were smoothed using a 1st order Butterworth low-pass
+    filter with a 1 Hz cutoff frequency, as specified for DB1 [1]. The refined
+    movement labels (restimulus) were used as ground truth rather than the
+    original stimulus labels, correcting for human reaction time delays via a
+    generalized likelihood ratio algorithm [1].
+
+  Windowing:
+    The filtered signal was segmented into non-overlapping 200ms windows, each
+    containing 20 samples at the 100 Hz sampling rate of DB1 [1]. Each window
+    constitutes one classification example.
+
+  Feature Extraction:
+    Four feature types were extracted per window across all 10 EMG channels,
+    producing a 290-value feature vector per window [1]:
+      - RMS:  Root Mean Square                          (10 values)
+      - TD:   Hudgins Time Domain (MAV, WL, ZC, SSC)   (40 values)
+      - HIST: Histogram, 20 bins along 3-sigma range   (200 values)
+      - mDWT: Marginal Discrete Wavelet Transform,
+              db7 wavelet, 3 decomposition levels       (40 values)
+
+  Train/Test Split:
+    Repetitions 2, 5, and 7 were held out as the test set, with the remaining
+    repetitions used for training, consistent with the paper's methodology for
+    DB1 [1]. This yielded approximately 179,000 training windows and 77,000
+    test windows.
+
+  Classification:
+    A Random Forest classifier was trained on the normalized combined feature
+    set, with class_weight='balanced' applied to account for variation in
+    movement repetition counts across classes [1]. Features were normalized
+    using StandardScaler prior to training, as required when combining feature
+    sets of different scales [1].
+
+RESULTS
+-------
+The pipeline achieved a classification accuracy of 63.46% across 52 movement
+classes, compared to a chance level of 1.92% — representing approximately 33x
+above-chance performance. This result confirms that the pipeline successfully
+learns meaningful patterns from EMG signals, significantly exceeding random
+chance across a challenging 52-class classification problem.
+
+APPLICATIONS
+------------
+This system is a foundational step toward naturally controlled robotic
+prosthetics. At inference time, a live 200ms window of forearm EMG would be
+captured, features extracted, and the trained model would predict the intended
+movement in near real-time — translating directly into a motor command for a
+bionic hand. This approach has the potential to dramatically improve the
+quality of life for trans-radial amputees by replacing rudimentary open/close
+prosthetic control with rich, intuitive, multi-movement control [1].
+
+REFERENCES
+----------
+[1] Atzori, M. et al. "Electromyography data for non-invasive
+    naturally-controlled robotic hand prostheses."
+    Scientific Data 1:140053, doi: 10.1038/sdata.2014.53 (2014).
+================================================================================
+```

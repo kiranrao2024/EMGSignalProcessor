@@ -1,0 +1,99 @@
+```
+================================================================================
+EMG GESTURE CLASSIFICATION - RESULTS INTERPRETATION
+================================================================================
+
+PIPELINE SUMMARY
+----------------
+Subjects processed : 27/27 (complete)
+Processing time    : ~5 minutes (~11 seconds per subject)
+Feature matrix     : 256,361 windows x 290 features
+Label vector       : 256,361 labels
+Classes present    : 52 (movements 1-52, all exercises covered)
+Repetitions        : 1-10 (all 10 repetitions accounted for)
+
+TRAIN / TEST SPLIT  [per Atzori et al., 2014]
+---------------------------------------------
+Training samples   : 179,191  (~70% - repetitions 1,3,4,6,8,9,10)
+Test samples       :  77,170  (~30% - repetitions 2, 5, and 7)
+
+TRAINING
+--------
+Backend            : ThreadingBackend (12 concurrent workers)
+Trees trained      : 100
+Training time      : ~48 seconds
+Inference time     : ~1 second
+
+OVERALL PERFORMANCE
+-------------------
+Accuracy           : 63.46%
+Chance level       : 1.92%  (random guessing across 52 classes)
+Performance ratio  : ~33x above chance
+
+The model performs significantly above chance, confirming that the pipeline
+is correctly learning meaningful patterns from EMG signals. 
+
+PERFORMANCE BY EXERCISE
+-----------------------
+Exercise A - Finger movements (classes 1-12)
+  Best  : class 12  precision=0.76  recall=0.75  f1=0.75
+  Worst : class  9  precision=0.61  recall=0.63  f1=0.62
+  Notes : Strongest overall performance. Individual finger movements
+          produce distinct and separable EMG patterns.
+
+Exercise B - Wrist/hand configurations (classes 13-29)
+  Best  : class 14  precision=0.73  recall=0.76  f1=0.74
+  Worst : class 16  precision=0.66  recall=0.54  f1=0.59
+  Notes : Moderate performance. Wrist movements share some EMG
+          overlap, making certain classes harder to separate.
+
+Exercise C - Grasping movements (classes 30-52)
+  Best  : class 49  precision=0.73  recall=0.80  f1=0.76
+  Worst : class 32  precision=0.54  recall=0.37  f1=0.44
+  Notes : Weakest overall performance. Complex grasping movements
+          are biomechanically similar, producing overlapping EMG
+          patterns that are difficult to distinguish.
+
+NOTABLE OUTLIERS
+----------------
+Class 32 (f1=0.44) : Lowest performing class. Low recall (0.37)
+                     suggests the model frequently misclassifies
+                     this movement as something else.
+
+Class 49 (f1=0.76) : Highest performing class in Exercise C,
+                     comparable to Exercise A performance.
+
+Class 46 (recall=0.75) : High recall but lower precision (0.57),
+                         meaning the model over-predicts this class,
+                         capturing true positives but also pulling in
+                         windows from neighboring classes.
+
+METRIC DEFINITIONS
+------------------
+Precision : Of all windows the model labelled as class X,
+            what fraction were actually class X?
+            (measures false positive rate)
+
+Recall    : Of all windows that were actually class X,
+            what fraction did the model correctly identify?
+            (measures false negative rate)
+
+F1 Score  : Harmonic mean of precision and recall.
+            A balanced measure of overall class performance.
+            F1 = 2 * (precision * recall) / (precision + recall)
+
+Support   : Number of test windows belonging to each class.
+
+MACRO AVG : Average across all 52 classes equally weighted.
+            precision=0.64  recall=0.63  f1=0.63
+
+WEIGHTED AVG : Average weighted by class support (number of
+               test windows per class).
+               precision=0.63  recall=0.63  f1=0.63
+
+================================================================================
+Reference: Atzori, M. et al. "Electromyography data for non-invasive
+naturally-controlled robotic hand prostheses."
+Scientific Data 1:140053, doi: 10.1038/sdata.2014.53 (2014).
+================================================================================
+```
