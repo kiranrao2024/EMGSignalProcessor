@@ -23,7 +23,6 @@ Training Random Forest...
 
 Accuracy       : 63.46%
 Chance level   : 1.92%
-Paper benchmark: 75.32%
 
 Classification Report:
               precision    recall  f1-score   support
